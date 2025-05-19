@@ -20,13 +20,6 @@ Sebelum memulai, pastikan Anda memiliki:
 
 ## Langkah Instalasi
 
-### 1. Clone Repository
-Clone proyek ini ke komputer Anda:
-```bash
-git clone https://github.com/RafiIkhwan/hoteltech.git
-cd hoteltech
-```
-
 ### 2. Instal Dependensi PHP
 Gunakan Composer untuk menginstal dependensi Laravel:
 ```bash
@@ -133,12 +126,6 @@ Proyek ini menggunakan autentikasi multi-user dengan dua role utama:
 ## Lisensi
 Proyek ini dilisensikan di bawah [MIT License](LICENSE).
 
-## Kontak
-Jika ada pertanyaan atau masalah, hubungi:
-- Email: [rafiikhwan2006@gmail.com]
-- GitHub: [RafiIkhwan](https://github.com/RafiIkhwan)
-
----
 
 ### Catatan Tambahan
 - **Penyesuaian:** Anda bisa menyesuaikan bagian "Kontak" dan "Lisensi" sesuai kebutuhan.
