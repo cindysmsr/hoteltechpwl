@@ -2,6 +2,7 @@
 
 @section('title', 'Reservasi Kamar Hotel')
 <!-- hallo -->
+ <!-- world -->
 @section('content')
 <!-- Hero Section -->
 <section class="relative bg-cover bg-center py-32 text-white text-center" id="beranda" style="background-image: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3)), url('{{ asset('img/' . $heroData['image']) }}')">
