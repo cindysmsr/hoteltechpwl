@@ -1,9 +1,9 @@
 <?php
 
+
 namespace Database\Seeders;
 
 use App\Models\RoomType;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class RoomTypeSeeder extends Seeder
@@ -19,21 +19,24 @@ class RoomTypeSeeder extends Seeder
                 'description' => 'Comfortable room with basic amenities for a pleasant stay.',
                 'price' => 100000.00,
                 'capacity' => 2,
-                'amenities' => ['TV', 'AC', 'WiFi', 'Private Bathroom'],
+                'amenities' => json_encode(['TV', 'AC', 'WiFi', 'Private Bathroom']),
+                'img' => 'room_types/standard.jpeg',
             ],
             [
                 'name' => 'Deluxe',
                 'description' => 'Spacious room with premium amenities and scenic views.',
                 'price' => 200000.00,
                 'capacity' => 2,
-                'amenities' => ['TV', 'AC', 'WiFi', 'Private Bathroom', 'Mini Bar', 'Coffee Maker'],
+                'amenities' => json_encode(['TV', 'AC', 'WiFi', 'Private Bathroom', 'Mini Bar', 'Coffee Maker']),
+                'img' => 'room_types/deluxe.jpeg',
             ],
             [
                 'name' => 'Suite',
-                'description' => 'Luxury suite with separate living area and exclusive amenities.',
+                'description' => 'Luxury with separate living area and exclusive amenities.',
                 'price' => 350000.00,
                 'capacity' => 4,
-                'amenities' => ['TV', 'AC', 'WiFi', 'Private Bathroom', 'Mini Bar', 'Coffee Maker', 'Jacuzzi', 'Kitchenette', 'Living Room'],
+                'amenities' => json_encode(['TV', 'AC', 'WiFi', 'Private Bathroom', 'Mini Bar', 'Coffee Maker', 'Jacuzzi', 'Kitchenette', 'Living Room']),
+                'img' => 'room_types/suite.jpeg',
             ],
         ];
 
