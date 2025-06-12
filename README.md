@@ -5,7 +5,7 @@
 - **Cindy Samosir  241402009 :** Backend
 - **Dolly Efredi Bukit 241402021 :** Backend
 - **Chaterine Eklesia Maryati 241402123 :** Frontend 
-- **Fahrizal Ginting 221402 :** Backend
+- **Fahrizal Ginting 221402 :** Frontend
 
 **HotelTech** adalah aplikasi berbasis web untuk manajemen reservasi hotel, dibangun menggunakan **Laravel 12**. Aplikasi ini mendukung autentikasi multi-user (Admin dan Guest), menggunakan TailwindCSS untuk styling, dan dirancang untuk pasar Indonesia dengan format bahasa dan mata uang lokal (Rupiah).
 
