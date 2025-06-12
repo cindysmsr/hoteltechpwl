@@ -20,7 +20,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Payment Details -->
             <div class="p-6">
                 <div class="mb-6">
@@ -70,8 +70,8 @@
                                     <p class="font-medium">Kartu Kredit</p>
                                     @php
                                         $session = session('payment_data', []);
-                                        $maskedCardNumber = isset($session['card_number']) ? 
-                                            '**** **** **** ' . substr($session['card_number'], -4) : 
+                                        $maskedCardNumber = isset($session['card_number']) ?
+                                            '**** **** **** ' . substr($session['card_number'], -4) :
                                             'xxxx xxxx xxxx xxxx';
                                     @endphp
                                     <p class="text-sm text-gray-500">{{ $maskedCardNumber }}</p>
@@ -115,7 +115,7 @@
                     <div class="bg-gray-50 rounded-lg p-4">
                         <div class="flex justify-between mb-2">
                             <span>Total Biaya Kamar</span>
-                            <span>Rp {{ number_format($reservation->total_amount - ($reservation->total_amount * 0.11), 0, ',', '.') }}</span>
+                            <span>Rp {{ number_format($reservation->total_amount, 0, ',', '.') }}</span>
                         </div>
                         <div class="flex justify-between mb-2">
                             <span>Pajak (11%)</span>
@@ -123,7 +123,7 @@
                         </div>
                         <div class="flex justify-between font-bold text-lg border-t border-gray-300 pt-2 mt-2">
                             <span>Total Pembayaran</span>
-                            <span>Rp {{ number_format($reservation->total_amount, 0, ',', '.') }}</span>
+                            <span>Rp {{ number_format($reservation->total_amount + ($reservation->total_amount * 0.11), 0, ',', '.') }}</span>
                         </div>
                     </div>
                 </div>
@@ -137,7 +137,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Action Buttons -->
                 <div class="mt-8 flex flex-col sm:flex-row justify-between gap-4">
                     <a href="{{ route('guest.invoices.download', $reservation->invoice->id) }}" class="inline-flex justify-center items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
