@@ -26,8 +26,6 @@
 - **php MyAdmin**
 - **Github**
 
-**Library yang Dipakai**
-
 ## Alur Penggunaan Aplikasi
 
 ## Alur Reservasi untuk Guest
