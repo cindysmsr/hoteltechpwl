@@ -37,7 +37,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Reservation Details -->
             <div class="p-6">
                 <div class="mb-6">
@@ -56,7 +56,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="mb-6 border-t border-gray-200 pt-6">
                     <h2 class="text-lg font-semibold mb-4">Informasi Kamar</h2>
                     @foreach ($reservation->rooms as $room)
@@ -83,19 +83,19 @@
                                 <div class="flex items-center text-sm text-gray-600">
                                     <span class="font-semibold">Rp</span>
                                     <span class="ml-1">{{ number_format($room->roomType->price, 0, ',', '.') }} / malam</span>
-                                </div>                                
+                                </div>
                             </div>
                         </div>
                     </div>
                     @endforeach
                 </div>
-                
+
                 <div class="mb-6 border-t border-gray-200 pt-6">
                     <h2 class="text-lg font-semibold mb-4">Detail Pembayaran</h2>
                     <div class="bg-gray-50 rounded-lg p-4">
                         <div class="flex justify-between mb-2">
                             <span>Subtotal</span>
-                            <span>Rp {{ number_format($reservation->total_amount - ($reservation->total_amount * 0.11), 0, ',', '.') }}</span>
+                            <span>Rp {{ number_format($reservation->total_amount) }}</span>
                         </div>
                         <div class="flex justify-between mb-2">
                             <span>Pajak (11%)</span>
@@ -103,11 +103,11 @@
                         </div>
                         <div class="flex justify-between font-bold text-lg border-t border-gray-300 pt-2 mt-2">
                             <span>Total</span>
-                            <span>Rp {{ number_format($reservation->total_amount, 0, ',', '.') }}</span>
+                            <span>Rp {{ number_format($reservation->total_amount + ($reservation->total_amount * 0.11), 0, ',', '.') }}</span>
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="border-t border-gray-200 pt-6">
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
                         <div class="mb-4 md:mb-0">
@@ -126,6 +126,11 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
             </div>
         </div>
     </div>
