@@ -20,7 +20,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Reservations List -->
             <div class="p-6">
                 @if(session('success'))
@@ -145,7 +145,7 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="text-sm font-medium text-gray-900">
-                                            Rp {{ number_format($reservation->total_amount, 0, ',', '.') }}
+                                            Rp {{ number_format($reservation->total_amount + ($reservation->total_amount * 0.11), 0, ',', '.') }}</span>
                                         </div>
                                         <div class="text-xs text-gray-500">
                                             @if($reservation->invoice && $reservation->invoice->payment_status == 'paid')
@@ -198,7 +198,7 @@
                                                 </svg>
                                                 Detail
                                             </a>
-                                            
+
                                             @if($reservation->invoice && $reservation->invoice->payment_status == 'paid')
                                                 <a href="{{ route('guest.invoices.download', $reservation->invoice->id) }}" class="text-green-600 hover:text-green-900 flex items-center justify-center">
                                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -214,7 +214,7 @@
                                                     Bayar
                                                 </a>
                                             @endif
-                                            
+
                                             @if($reservation->status != 'cancelled' && $reservation->status != 'checked_in' && $reservation->status != 'checked_out')
                                                 <button type="button" onclick="showCancelModal('{{ $reservation->id }}')" class="text-red-600 hover:text-red-900 flex items-center justify-center">
                                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -239,7 +239,7 @@
                             </tbody>
                         </table>
                     </div>
-                    
+
                     <!-- Pagination -->
                     <div class="mt-6">
                         {{ $reservations->links() }}
@@ -296,7 +296,7 @@
         document.getElementById('cancelForm').action = `{{ route('guest.reservations.cancel', ':id') }}`.replace(':id', reservationId);
         document.getElementById('cancelModal').classList.remove('hidden');
     }
-    
+
     function hideCancelModal() {
         document.getElementById('cancelModal').classList.add('hidden');
     }
