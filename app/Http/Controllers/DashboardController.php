@@ -27,21 +27,23 @@ class DashboardController extends Controller
             'occupied' => Room::where('status', 'occupied')->count(),
             'maintenance' => Room::where('status', 'maintenance')->count(),
         ];
-        
+
         $totalReservations = Reservation::count();
         $activeReservations = Reservation::where('status', 'confirmed')->count();
         $checkedInReservations = Reservation::where('status', 'checked_in')->count();
-        
-        $monthlyRevenue = Invoice::whereMonth('created_at', Carbon::now()->month)
-            ->sum('grand_total');
-        
-        $annualRevenue = Invoice::whereYear('created_at', Carbon::now()->year)
-            ->sum('grand_total');
-        
+
+        $monthlyRevenue = Invoice::whereIn('payment_status', ['partially_paid', 'paid'])
+            ->whereMonth('created_at', Carbon::now()->month)
+            ->sum('total_amount');
+
+        $annualRevenue = Invoice::whereIn('payment_status', ['partially_paid', 'paid'])
+            ->whereYear('created_at', Carbon::now()->year)
+            ->sum('total_amount');
+
         $totalRooms = Room::count();
         $occupiedRooms = Room::where('status', 'occupied')->count();
         $availableRooms = $totalRooms - $occupiedRooms;
-        
+
         $topGuests = Guest::withCount('reservations')
             ->orderBy('reservations_count', 'desc')
             ->limit(5)
