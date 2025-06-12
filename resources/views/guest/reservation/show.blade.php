@@ -69,7 +69,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Reservation Details -->
             <div class="p-6">
                 @if(session('success'))
@@ -198,8 +198,8 @@
                                         <p class="font-medium">Kartu Kredit</p>
                                         @php
                                             $session = session('payment_data', []);
-                                            $maskedCardNumber = isset($session['card_number']) ? 
-                                                '**** **** **** ' . substr($session['card_number'], -4) : 
+                                            $maskedCardNumber = isset($session['card_number']) ?
+                                                '**** **** **** ' . substr($session['card_number'], -4) :
                                                 'xxxx xxxx xxxx xxxx';
                                         @endphp
                                         <p class="text-sm text-gray-500">{{ $maskedCardNumber }}</p>
@@ -241,7 +241,7 @@
                         <div>
                             <div class="flex justify-between mb-2">
                                 <span>Total Biaya Kamar</span>
-                                <span>Rp {{ number_format($reservation->total_amount - ($reservation->total_amount * 0.11), 0, ',', '.') }}</span>
+                                <span>Rp {{ number_format($reservation->total_amount, 0, ',', '.') }}</span>
                             </div>
                             <div class="flex justify-between mb-2">
                                 <span>Pajak (11%)</span>
@@ -249,7 +249,7 @@
                             </div>
                             <div class="flex justify-between font-bold text-lg border-t border-gray-300 pt-2 mt-2">
                                 <span>Total Pembayaran</span>
-                                <span>Rp {{ number_format($reservation->total_amount, 0, ',', '.') }}</span>
+                                <span>Rp {{ number_format($reservation->total_amount + ($reservation->total_amount * 0.11), 0, ',', '.') }}</span>
                             </div>
                         </div>
                         @else
@@ -334,6 +334,11 @@
                         Kembali ke Daftar
                     </a>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
             </div>
         </div>
     </div>
