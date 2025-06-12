@@ -19,7 +19,7 @@
             </div>
         </div>
         @endif
-        
+
         @if (session('error'))
         <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded" role="alert">
             <div class="flex items-start">
@@ -41,7 +41,7 @@
                 <h1 class="text-2xl font-bold">Pembayaran Reservasi</h1>
                 <p class="mt-1">Nomor Reservasi: {{ $reservation->reservation_number }}</p>
             </div>
-            
+
             <!-- Payment Summary -->
             <div class="p-6">
                 <div class="mb-6">
@@ -49,7 +49,7 @@
                     <div class="bg-gray-50 rounded-lg p-4">
                         <div class="flex justify-between mb-2">
                             <span>Total Biaya Kamar</span>
-                            <span>Rp {{ number_format($reservation->total_amount - ($reservation->total_amount * 0.11), 0, ',', '.') }}</span>
+                            <span>Rp {{ number_format($reservation->total_amount, 0, ',', '.') }}</span>
                         </div>
                         <div class="flex justify-between mb-2">
                             <span>Pajak (11%)</span>
@@ -57,17 +57,17 @@
                         </div>
                         <div class="flex justify-between font-bold text-lg border-t border-gray-300 pt-2 mt-2">
                             <span>Total Pembayaran</span>
-                            <span>Rp {{ number_format($reservation->total_amount, 0, ',', '.') }}</span>
+                            <span>Rp {{ number_format($reservation->total_amount + ($reservation->total_amount * 0.11), 0, ',', '.') }}</span>
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Payment Form -->
                 <form method="POST" action="{{ route('guest.reservations.processPayment', $reservation->id) }}">
                     @csrf
                     <div class="mb-6 border-t border-gray-200 pt-6">
                         <h2 class="text-lg font-semibold mb-4">Metode Pembayaran</h2>
-                        
+
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                             <div class="border rounded-lg p-4 cursor-pointer hover:bg-blue-50 transition duration-200" onclick="selectPaymentMethod('credit_card')">
                                 <div class="flex items-center">
@@ -77,7 +77,7 @@
                                     </label>
                                 </div>
                             </div>
-                            
+
                             <div class="border rounded-lg p-4 cursor-pointer hover:bg-blue-50 transition duration-200" onclick="selectPaymentMethod('bank_transfer')">
                                 <div class="flex items-center">
                                     <input id="bank_transfer" type="radio" name="payment_method" value="bank_transfer" class="h-4 w-4 text-blue-600 focus:ring-blue-500">
@@ -86,7 +86,7 @@
                                     </label>
                                 </div>
                             </div>
-                            
+
                             <div class="border rounded-lg p-4 cursor-pointer hover:bg-blue-50 transition duration-200" onclick="selectPaymentMethod('e-wallet')">
                                 <div class="flex items-center">
                                     <input id="e-wallet" type="radio" name="payment_method" value="e-wallet" class="h-4 w-4 text-blue-600 focus:ring-blue-500">
@@ -96,7 +96,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!-- Credit Card Form (hidden by default) -->
                         <div id="credit_card_form" class="hidden space-y-4">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -132,7 +132,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!-- Bank Transfer Form (hidden by default) -->
                         <div id="bank_transfer_form" class="hidden space-y-4">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -158,7 +158,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!-- E-Wallet Form (hidden by default) -->
                         <div id="e-wallet_form" class="hidden space-y-4">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -185,7 +185,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="pt-6">
                         <div class="mt-6 flex justify-between">
                             <a href="{{ route('guest.reservations.show', $reservation->id) }}" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
@@ -208,10 +208,10 @@
         document.getElementById('credit_card_form').classList.add('hidden');
         document.getElementById('bank_transfer_form').classList.add('hidden');
         document.getElementById('e-wallet_form').classList.add('hidden');
-        
+
         // Show selected payment form
         document.getElementById(method + '_form').classList.remove('hidden');
-        
+
         // Check the radio button
         document.getElementById(method).checked = true;
     }
