@@ -78,6 +78,7 @@
             </tbody>
         </table>
     </div>
+    <!-- hallo -->
 </div>
 
 @endsection
