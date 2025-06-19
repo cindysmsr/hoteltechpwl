@@ -63,7 +63,7 @@
             <h2 class="text-3xl md:text-4xl font-bold text-gray-800">Pilihan Tipe Kamar</h2>
             <p class="text-gray-600 mt-3">Temukan kamar yang sesuai dengan kebutuhan dan budget Anda</p>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             @foreach ($roomTypes as $roomType)
             <div class="bg-white rounded-lg overflow-hidden shadow-lg hover:-translate-y-2 transition-transform duration-300">
                 <div class="h-48 overflow-hidden">
