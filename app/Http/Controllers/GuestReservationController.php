@@ -29,15 +29,16 @@ class GuestReservationController extends Controller
         $checkInDate = Carbon::parse($validated['check_in_date']);
         $checkOutDate = Carbon::parse($validated['check_out_date']);
         $numNights = $checkInDate->diffInDays($checkOutDate);
-        
-        $query = RoomType::query();
+        $adults = $validated['adults'];
+
+        $query = RoomType::where('capacity', '>=', $adults);
 
         $roomTypesOption = RoomType::all();
-        
+
         if ($request->room_type && $request->room_type != 'Semua Tipe') {
             $query->where('id', $request->room_type);
         }
-        
+
         $roomTypes = $query->with(['rooms' => function($query) use ($checkInDate, $checkOutDate) {
             $query->where('status', 'available')
                 ->whereDoesntHave('reservations', function($query) use ($checkInDate, $checkOutDate) {
@@ -51,18 +52,25 @@ class GuestReservationController extends Controller
                     })->whereIn('status', ['confirmed', 'checked_in']);
                 });
         }])->get();
-        
+
         foreach ($roomTypes as $roomType) {
             $roomType->available_count = $roomType->rooms->count();
         }
-        
-        return view('guest.reservation.search-results', compact('roomTypes', 'checkInDate', 'checkOutDate', 'numNights', 'validated', 'roomTypesOption'));
+
+        return view('guest.reservation.search-results', compact(
+            'roomTypes',
+            'checkInDate',
+            'checkOutDate',
+            'numNights',
+            'validated',
+            'roomTypesOption'
+        ));
     }
 
     public function createReservation($roomTypeId, Request $request)
     {
         $roomType = RoomType::findOrFail($roomTypeId);
-        
+
         $checkInDate = $request->check_in_date;
         $checkOutDate = $request->check_out_date;
         $adults = $request->adults;
@@ -70,12 +78,12 @@ class GuestReservationController extends Controller
         $checkInDate = $checkInDate ?? now();
         $checkOutDate = $checkOutDate ?? ($checkInDate ? Carbon::parse($checkInDate)->addDay() : now()->addDay());
         $numNights = Carbon::parse($checkInDate)->diffInDays(Carbon::parse($checkOutDate));
-        
+
         $totalAmount = $roomType->price * $numNights;
-        
+
         return view('guest.reservation.create', compact(
-            'roomType', 
-            'checkInDate', 
+            'roomType',
+            'checkInDate',
             'checkOutDate',
             'adults',
             'children',
@@ -101,7 +109,7 @@ class GuestReservationController extends Controller
         ]);
 
         $guest = Auth::user()->guest;
-        
+
         if (!$guest) {
             $guest = Guest::create([
                 'name' => $validated['name'],
@@ -111,10 +119,10 @@ class GuestReservationController extends Controller
                 'id_card_type' => $validated['id_card_type'],
                 'id_card_number' => $validated['id_card_number'],
             ]);
-            
+
             Auth::user()->update(['guest_id' => $guest->id]);
         }
-        
+
         $roomType = RoomType::findOrFail($validated['room_type_id']);
         $availableRoom = Room::where('room_type_id', $roomType->id)
             ->where('status', 'available')
@@ -129,16 +137,16 @@ class GuestReservationController extends Controller
                 })->whereIn('status', ['confirmed', 'checked_in']);
             })
             ->first();
-            
+
         if (!$availableRoom) {
             return back()->with('error', 'Maaf, tidak ada kamar tersedia untuk tanggal yang dipilih.');
         }
-        
+
         $checkInDate = Carbon::parse($validated['check_in_date']);
         $checkOutDate = Carbon::parse($validated['check_out_date']);
         $numNights = $checkInDate->diffInDays($checkOutDate);
         $totalAmount = $roomType->price * $numNights;
-        
+
         $reservation = Reservation::create([
             'reservation_number' => 'RES-' . strtoupper(Str::random(8)),
             'guest_id' => $guest->id,
@@ -150,7 +158,7 @@ class GuestReservationController extends Controller
             'total_amount' => $totalAmount,
             'payment_status' => 'pending',
         ]);
-        
+
         ReservationRoom::create([
             'reservation_id' => $reservation->id,
             'room_id' => $availableRoom->id,
@@ -159,11 +167,11 @@ class GuestReservationController extends Controller
 
         $availableRoom->status = "occupied";
         $availableRoom->save();
-        
+
         $taxRate = 0.11;
         $taxAmount = $totalAmount * $taxRate;
         $grandTotal = $totalAmount + $taxAmount;
-        
+
         $invoice = Invoice::create([
             'invoice_number' => $this->generateInvoiceNumber(),
             'reservation_id' => $reservation->id,
@@ -174,7 +182,7 @@ class GuestReservationController extends Controller
             'payment_status' => 'pending',
             'notes' => 'Reservasi online',
         ]);
-        
+
         return redirect()->route('guest.reservation.confirmation', ['reservation' => $reservation->id])
             ->with('success', 'Reservasi berhasil dibuat!');
     }
@@ -184,32 +192,32 @@ class GuestReservationController extends Controller
         if (Auth::user()->guest->id != $reservation->guest_id) {
             abort(403, 'Unauthorized action.');
         }
-        
+
         $reservation->load('guest', 'rooms.roomType', 'invoice');
         $checkInDate = Carbon::parse($reservation->check_in_date);
         $checkOutDate = Carbon::parse($reservation->check_out_date);
         $numNights = $checkInDate->diffInDays($checkOutDate);
-        
+
         return view('guest.reservation.confirmation', compact('reservation', 'numNights'));
     }
-    
+
     public function showPayment(Reservation $reservation)
     {
         if (Auth::user()->guest->id != $reservation->guest_id) {
             abort(403, 'Unauthorized action.');
         }
-        
+
         $reservation->load('guest', 'rooms.roomType', 'invoice');
-        
+
         return view('guest.reservation.payment', compact('reservation'));
     }
-    
+
     public function processPayment(Request $request, Reservation $reservation)
     {
         if (Auth::user()->guest->id != $reservation->guest_id) {
             abort(403, 'Unauthorized action.');
         }
-        
+
         $validated = $request->validate([
             'payment_method' => 'required|in:credit_card,bank_transfer,e-wallet',
             'card_number' => 'required_if:payment_method,credit_card',
@@ -221,33 +229,34 @@ class GuestReservationController extends Controller
             'wallet_provider' => 'required_if:payment_method,e-wallet',
             'wallet_number' => 'required_if:payment_method,e-wallet',
         ]);
-        
+
         $reservation->invoice->update([
             'payment_method' => $validated['payment_method'],
             'payment_status' => 'paid',
         ]);
-        
+
         $reservation->update([
             'payment_status' => 'paid'
         ]);
-        
+
         return redirect()->route('guest.reservations.success', $reservation->id);
     }
-    
+
     public function showSuccessPage(Reservation $reservation)
     {
         if (Auth::user()->guest->id != $reservation->guest_id) {
             abort(403, 'Unauthorized action.');
         }
-        
+
         return view('guest.reservation.payment_success', [
             'reservation' => $reservation
         ]);
     }
+
     public function listReservations(Request $request)
     {
         $guest = Auth::user()->guest;
-        
+
         if (!$guest) {
             return redirect()->route('guest.profile.create')
                 ->with('warning', 'Harap lengkapi profil tamu terlebih dahulu.');
@@ -262,34 +271,34 @@ class GuestReservationController extends Controller
         }
 
         $reservations = $query->paginate(10);
-            
+
         return view('guest.reservation.list', compact('reservations'));
     }
-    
+
     public function showReservation(Reservation $reservation)
     {
         if (Auth::user()->guest->id != $reservation->guest_id) {
             abort(403, 'Unauthorized action.');
         }
-        
+
         $reservation->load('guest', 'rooms.roomType', 'invoice');
         $checkInDate = Carbon::parse($reservation->check_in_date);
         $checkOutDate = Carbon::parse($reservation->check_out_date);
         $numNights = $checkInDate->diffInDays($checkOutDate);
-        
+
         return view('guest.reservation.show', compact('reservation', 'numNights'));
     }
-    
+
     public function cancelReservation(Reservation $reservation)
     {
         if (Auth::user()->guest->id != $reservation->guest_id) {
             abort(403, 'Unauthorized action.');
         }
-        
+
         if ($reservation->status != 'confirmed') {
             return back()->with('error', 'Hanya reservasi dengan status terkonfirmasi yang dapat dibatalkan.');
         }
-        
+
         $reservation->update([
             'status' => 'cancelled'
         ]);
@@ -303,19 +312,19 @@ class GuestReservationController extends Controller
 
         if ($previousUrl === $listReservationsUrl) {
             return redirect()->route('guest.reservations.list')
-            ->with('success', 'Reservasi berhasil dibatalkan.');
+                ->with('success', 'Reservasi berhasil dibatalkan.');
         }
 
         return redirect()->route('home')
             ->with('success', 'Reservasi berhasil dibatalkan.');
     }
-  
+
     public function createReview(Reservation $reservation)
     {
         if (Auth::user()->guest->id != $reservation->guest_id) {
             abort(403, 'Unauthorized action.');
         }
-        
+
         $reservation = Reservation::where('id', $reservation->id)
             ->where('guest_id', Auth::user()->guest->id)
             ->where('status', 'checked_out')
@@ -346,7 +355,6 @@ class GuestReservationController extends Controller
             ->where('status', 'checked_out')
             ->firstOrFail();
 
-        // Check if review already exists
         $existingReview = Review::where('reservation_id', $reservationId)->first();
         if ($existingReview) {
             return redirect()->route('guest.reservations.list')
@@ -367,6 +375,7 @@ class GuestReservationController extends Controller
         return redirect()->route('guest.reservations.list')
             ->with('success', 'Terima kasih atas ulasan Anda!');
     }
+
     private function generateInvoiceNumber()
     {
         $prefix = 'INV-' . date('Ym');
@@ -374,8 +383,8 @@ class GuestReservationController extends Controller
             ->latest()
             ->first();
 
-        $number = $latestInvoice 
-            ? intval(substr($latestInvoice->invoice_number, -4)) + 1 
+        $number = $latestInvoice
+            ? intval(substr($latestInvoice->invoice_number, -4)) + 1
             : 1;
 
         return $prefix . sprintf('%04d', $number);
