@@ -55,38 +55,61 @@ class AuthController extends Controller
         return view('auth.register');
     }
 
+    public function showAdminRegistrationForm()
+    {
+        return view('auth.register_admin');
+    }
+
     public function register(Request $request)
     {
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-            'role' => 'required|in:admin,guest',
+            'password' => 'required|string|min:8|confirmed'
         ]);
 
-        if ($request->role === 'guest') {
-            $request->validate([
-                'phone' => 'required|string|max:255',
-                'address' => 'required|string|max:255',
-                'id_card_type' => 'required|string|in:KTP,SIM,Passport',
-                'id_card_number' => 'required|string|min:8|max:16',
-            ]);
+        $request->validate([
+            'phone' => 'required|string|max:255',
+            'address' => 'required|string|max:255',
+            'id_card_type' => 'required|string|in:KTP,SIM,Passport',
+            'id_card_number' => 'required|string|min:8|max:16',
+        ]);
 
-            $guest = Guest::create([
-                'name'  => $request->name,
-                'email' => $request->email,
-                'phone' => $request->phone,
-                'address' => $request->address,
-                'id_card_type' => $request->id_card_type,
-                'id_card_number' => $request->id_card_number
-            ]);
-        }
+        $guest = Guest::create([
+            'name'  => $request->name,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'address' => $request->address,
+            'id_card_type' => $request->id_card_type,
+            'id_card_number' => $request->id_card_number
+        ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => $request->role,
+            'role' => 'guest',
+        ]);
+
+        Auth::login($user);
+
+        return $this->redirectBasedOnRole($user);
+    }
+
+    public function registerAdmin(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed'
+        ]);
+
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => 'admin',
         ]);
 
         Auth::login($user);
