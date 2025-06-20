@@ -194,45 +194,55 @@ class GuestReservationController extends Controller
     }
     
     public function showPayment(Reservation $reservation)
-    {
-        if (Auth::user()->guest->id != $reservation->guest_id) {
-            abort(403, 'Unauthorized action.');
-        }
-        
-        $reservation->load('guest', 'rooms.roomType', 'invoice');
-        
-        return view('guest.reservation.payment', compact('reservation'));
+{
+    if (Auth::user()->guest->id != $reservation->guest_id) {
+        abort(403, 'Unauthorized action.');
     }
+
+    if ($reservation->status === 'cancelled') {
+        return redirect()->route('guest.reservations.list')
+            ->with('error', 'Reservasi ini telah dibatalkan dan tidak dapat dibayar.');
+    }
+
+    $reservation->load('guest', 'rooms.roomType', 'invoice');
+
+    return view('guest.reservation.payment', compact('reservation'));
+}
     
     public function processPayment(Request $request, Reservation $reservation)
-    {
-        if (Auth::user()->guest->id != $reservation->guest_id) {
-            abort(403, 'Unauthorized action.');
-        }
-        
-        $validated = $request->validate([
-            'payment_method' => 'required|in:credit_card,bank_transfer,e-wallet',
-            'card_number' => 'required_if:payment_method,credit_card',
-            'card_holder' => 'required_if:payment_method,credit_card',
-            'expiry_date' => 'required_if:payment_method,credit_card',
-            'cvv' => 'required_if:payment_method,credit_card',
-            'bank_name' => 'required_if:payment_method,bank_transfer',
-            'account_number' => 'required_if:payment_method,bank_transfer',
-            'wallet_provider' => 'required_if:payment_method,e-wallet',
-            'wallet_number' => 'required_if:payment_method,e-wallet',
-        ]);
-        
-        $reservation->invoice->update([
-            'payment_method' => $validated['payment_method'],
-            'payment_status' => 'paid',
-        ]);
-        
-        $reservation->update([
-            'payment_status' => 'paid'
-        ]);
-        
-        return redirect()->route('guest.reservations.success', $reservation->id);
+{
+    if (Auth::user()->guest->id != $reservation->guest_id) {
+        abort(403, 'Unauthorized action.');
     }
+
+    if ($reservation->status === 'cancelled') {
+        return redirect()->route('guest.reservations.list')
+            ->with('error', 'Reservasi ini telah dibatalkan dan tidak dapat diproses pembayarannya.');
+    }
+
+    $validated = $request->validate([
+        'payment_method' => 'required|in:credit_card,bank_transfer,e-wallet',
+        'card_number' => 'required_if:payment_method,credit_card',
+        'card_holder' => 'required_if:payment_method,credit_card',
+        'expiry_date' => 'required_if:payment_method,credit_card',
+        'cvv' => 'required_if:payment_method,credit_card',
+        'bank_name' => 'required_if:payment_method,bank_transfer',
+        'account_number' => 'required_if:payment_method,bank_transfer',
+        'wallet_provider' => 'required_if:payment_method,e-wallet',
+        'wallet_number' => 'required_if:payment_method,e-wallet',
+    ]);
+
+    $reservation->invoice->update([
+        'payment_method' => $validated['payment_method'],
+        'payment_status' => 'paid',
+    ]);
+
+    $reservation->update([
+        'payment_status' => 'paid'
+    ]);
+
+    return redirect()->route('guest.reservations.success', $reservation->id);
+}
     
     public function showSuccessPage(Reservation $reservation)
     {
