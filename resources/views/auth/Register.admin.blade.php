@@ -23,7 +23,7 @@
             </div>
         @endif
 
-        <form method="POST" action="{{ route('register') }}">
+        <form method="POST" action="{{ route('registerAdmin') }}">
             @csrf
             
             <div class="mb-4">
@@ -52,53 +52,12 @@
                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                 @enderror
             </div>
+            <input type="hidden" name="role" value="admin">
 
             <div class="mb-4">
                 <label for="password_confirmation" class="block text-gray-700 text-sm font-medium mb-2">Konfirmasi Password</label>
                 <input type="password" id="password_confirmation" name="password_confirmation" required
                     class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-            </div>
-            <!-- Form fields khusus tamu -->
-            <div id="guest_fields">
-                <div class="mb-4">
-                    <label for="phone" class="block text-gray-700 text-sm font-medium mb-2">Nomor Telepon</label>
-                    <input type="text" id="phone" name="phone" value="{{ old('phone') }}"
-                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 @error('phone') border-red-500 @enderror">
-                    @error('phone')
-                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-                
-                <div class="mb-4">
-                    <label for="address" class="block text-gray-700 text-sm font-medium mb-2">Alamat</label>
-                    <textarea id="address" name="address" rows="3"
-                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 @error('address') border-red-500 @enderror">{{ old('address') }}</textarea>
-                    @error('address')
-                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-                
-                <div class="mb-4">
-                    <label for="id_card_type" class="block text-gray-700 text-sm font-medium mb-2">Tipe Kartu Identitas</label>
-                    <select id="id_card_type" name="id_card_type" 
-                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 @error('id_card_type') border-red-500 @enderror">
-                        <option value="KTP">KTP</option>
-                        <option value="SIM">SIM</option>
-                        <option value="Passport">Passport</option>
-                    </select>
-                    @error('id_card_type')
-                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-                
-                <div class="mb-4">
-                    <label for="id_card_number" class="block text-gray-700 text-sm font-medium mb-2">Nomor Kartu Identitas</label>
-                    <input type="text" id="id_card_number" name="id_card_number" value="{{ old('id_card_number') }}"
-                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 @error('id_card_number') border-red-500 @enderror">
-                    @error('id_card_number')
-                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
             </div>
 
             <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition duration-200 mt-6">
