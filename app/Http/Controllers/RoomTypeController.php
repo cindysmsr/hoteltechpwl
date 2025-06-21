@@ -34,7 +34,7 @@ class RoomTypeController extends Controller
         ]);
 
         if ($request->hasFile('img')) {
-            $imagePath = $request->file('img')->store('room-types', 'public');
+            $imagePath = $request->file('img')->store('room_types', 'public');
             $validated['img'] = $imagePath;
         }
 
